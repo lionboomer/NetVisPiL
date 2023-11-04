@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Netzwerkscanner</title>
@@ -12,14 +13,17 @@
             border: 1px solid lightgray;
             margin-bottom: 20px;
         }
+
         #control-panel {
             text-align: center;
         }
+
         #info-panel {
             text-align: center;
         }
     </style>
 </head>
+
 <body>
     <div id="control-panel">
         <h1>Netzwerkscanner</h1>
@@ -35,8 +39,9 @@
             var nodes = [];
             var edges = [];
 
-            data.forEach(function(item, index) {
-                nodes.push({ id: index, label: item[0], title: 'Klicken für Details', physics: true });
+            data.forEach(function (item, index) {
+                var label = item.hostname ? `${item.hostname} (${item.ip})` : item.ip;
+                nodes.push({ id: index, label: label, title: 'Klicken für Details', physics: true });
             });
 
             var visData = {
@@ -69,22 +74,21 @@
         }
 
         function showNodeDetails(nodeData) {
-            // Hier können Sie Informationen sammeln und anzeigen, z.B. einen Nmap-Scan des Hosts
             var infoPanel = document.getElementById('info-panel');
-            infoPanel.innerHTML = '<p>Host: ' + nodeData[0] + '<br>Status: ' + nodeData[1] + '</p>';
-            // Fügen Sie hier weitere Details hinzu
-        }
+            var portsInfo = nodeData.ports.join('<br>');
+            infoPanel.innerHTML = `<p>Host: ${nodeData.hostname || nodeData.ip}<br>IP: ${nodeData.ip}<br>Ports:<br>${portsInfo}</p>`;
 
-        function scanNetwork() {
-            fetch('/scan')
-                .then(response => response.json())
-                .then(data => {
-                    drawNetwork(data);
-                })
-                .catch(error => {
-                    console.error('Error during network scan:', error);
-                });
-        }
+            function scanNetwork() {
+                fetch('/scan')
+                    .then(response => response.json())
+                    .then(data => {
+                        drawNetwork(data);
+                    })
+                    .catch(error => {
+                        console.error('Error during network scan:', error);
+                    });
+            }
     </script>
 </body>
+
 </html>
