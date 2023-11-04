@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Netzwerkscanner</title>
@@ -13,27 +12,22 @@
             border: 1px solid lightgray;
             margin-bottom: 20px;
         }
-
         #control-panel {
             text-align: center;
         }
-
         #info-panel {
             text-align: center;
         }
     </style>
 </head>
-
 <body>
     <div id="control-panel">
         <h1>Netzwerkscanner</h1>
         <button onclick="scanNetwork()">Netzwerk scannen</button>
         <div id="loading-indicator" style="display:none;">Scannen...</div>
     </div>
-
     <div id="network-container"></div>
     <div id="info-panel"></div>
-
 
     <script>
         var network;
@@ -41,19 +35,15 @@
         function scanNetwork() {
             var loadingIndicator = document.getElementById('loading-indicator');
             loadingIndicator.style.display = 'block'; // Zeigt den Ladeindikator an
-
-            console.log('Scanning network...'); // Konsolenausgabe, dass der Scan beginnt
-
             fetch('/scan')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Scan completed:', data); // Konsolenausgabe des Scan-Ergebnisses
-                    drawNetwork(data);
                     loadingIndicator.style.display = 'none'; // Versteckt den Ladeindikator
+                    drawNetwork(data);
                 })
                 .catch(error => {
-                    console.error('Error during network scan:', error);
                     loadingIndicator.style.display = 'none'; // Versteckt den Ladeindikator bei einem Fehler
+                    console.error('Error during network scan:', error);
                 });
         }
 
@@ -62,7 +52,7 @@
             var edges = [];
 
             data.forEach(function (item, index) {
-                var label = item.hostname ? `${item.hostname} (${item.ip})` : item.ip;
+                var label = item.ip + (item.hostname ? ` (${item.hostname})` : '');
                 nodes.push({ id: index, label: label, title: 'Klicken für Details', physics: true });
             });
 
@@ -85,7 +75,6 @@
             var container = document.getElementById('network-container');
             network = new vis.Network(container, visData, options);
 
-            // Ereignis beim Klicken auf einen Knoten
             network.on("click", function (params) {
                 if (params.nodes.length > 0) {
                     var nodeId = params.nodes[0];
@@ -98,19 +87,8 @@
         function showNodeDetails(nodeData) {
             var infoPanel = document.getElementById('info-panel');
             var portsInfo = nodeData.ports.join('<br>');
-            infoPanel.innerHTML = `<p>Host: ${nodeData.hostname || nodeData.ip}<br>IP: ${nodeData.ip}<br>Ports:<br>${portsInfo}</p>`;
-
-            function scanNetwork() {
-                fetch('/scan')
-                    .then(response => response.json())
-                    .then(data => {
-                        drawNetwork(data);
-                    })
-                    .catch(error => {
-                        console.error('Error during network scan:', error);
-                    });
-            }
+            infoPanel.innerHTML = `<p>Host: ${nodeData.ip}<br>Ports:<br>${portsInfo}</p>`;
+        }
     </script>
 </body>
-
 </html>
