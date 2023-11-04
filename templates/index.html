@@ -28,12 +28,34 @@
     <div id="control-panel">
         <h1>Netzwerkscanner</h1>
         <button onclick="scanNetwork()">Netzwerk scannen</button>
+        <div id="loading-indicator" style="display:none;">Scannen...</div>
     </div>
+
     <div id="network-container"></div>
     <div id="info-panel"></div>
 
+
     <script>
         var network;
+
+        function scanNetwork() {
+            var loadingIndicator = document.getElementById('loading-indicator');
+            loadingIndicator.style.display = 'block'; // Zeigt den Ladeindikator an
+
+            console.log('Scanning network...'); // Konsolenausgabe, dass der Scan beginnt
+
+            fetch('/scan')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Scan completed:', data); // Konsolenausgabe des Scan-Ergebnisses
+                    drawNetwork(data);
+                    loadingIndicator.style.display = 'none'; // Versteckt den Ladeindikator
+                })
+                .catch(error => {
+                    console.error('Error during network scan:', error);
+                    loadingIndicator.style.display = 'none'; // Versteckt den Ladeindikator bei einem Fehler
+                });
+        }
 
         function drawNetwork(data) {
             var nodes = [];
