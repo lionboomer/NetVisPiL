@@ -26,7 +26,7 @@ Um das Tool zu installieren, folgen Sie diesen Schritten:
 
    ```bash
    git clone https://github.com/your-username/netzwerkscanner-tool.git
-   cd netzwerkscanner-tool
+   cd NetVisPiL
    ```
 
 2. Führe das Installationsskript aus (für Unix-ähnliche Systeme):
