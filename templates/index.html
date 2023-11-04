@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Netzwerkscanner</title>
+    <link href="https://unpkg.com/vis-network/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/vis-network/dist/vis-network.min.js"></script>
+    <style>
+        #network-container {
+            width: 100%;
+            height: 80vh;
+            border: 1px solid lightgray;
+            margin-bottom: 20px;
+        }
+        #control-panel {
+            text-align: center;
+        }
+        #info-panel {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="control-panel">
+        <h1>Netzwerkscanner</h1>
+        <button onclick="scanNetwork()">Netzwerk scannen</button>
+    </div>
+    <div id="network-container"></div>
+    <div id="info-panel"></div>
+
+    <script>
+        var network;
+
+        function drawNetwork(data) {
+            var nodes = [];
+            var edges = [];
+
+            data.forEach(function(item, index) {
+                nodes.push({ id: index, label: item[0], title: 'Klicken für Details', physics: true });
+            });
+
+            var visData = {
+                nodes: new vis.DataSet(nodes),
+                edges: new vis.DataSet(edges)
+            };
+
+            var options = {
+                physics: {
+                    enabled: true,
+                    stabilization: false
+                },
+                interaction: {
+                    dragNodes: true,
+                    hover: true
+                }
+            };
+
+            var container = document.getElementById('network-container');
+            network = new vis.Network(container, visData, options);
+
+            // Ereignis beim Klicken auf einen Knoten
+            network.on("click", function (params) {
+                if (params.nodes.length > 0) {
+                    var nodeId = params.nodes[0];
+                    var nodeData = data[nodeId];
+                    showNodeDetails(nodeData);
+                }
+            });
+        }
+
+        function showNodeDetails(nodeData) {
+            // Hier können Sie Informationen sammeln und anzeigen, z.B. einen Nmap-Scan des Hosts
+            var infoPanel = document.getElementById('info-panel');
+            infoPanel.innerHTML = '<p>Host: ' + nodeData[0] + '<br>Status: ' + nodeData[1] + '</p>';
+            // Fügen Sie hier weitere Details hinzu
+        }
+
+        function scanNetwork() {
+            fetch('/scan')
+                .then(response => response.json())
+                .then(data => {
+                    drawNetwork(data);
+                })
+                .catch(error => {
+                    console.error('Error during network scan:', error);
+                });
+        }
+    </script>
+</body>
+</html>
