@@ -4,6 +4,10 @@ import re
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return render_template('templates/index.html')
+
 @app.route('/scan', methods=['GET'])
 def scan():
     # Der Befehl, um einen schnellen Scan der meistgenutzten Ports durchzuführen.
